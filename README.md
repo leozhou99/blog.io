@@ -1,23 +1,21 @@
 ## 说明
 
-此博客模板 Fork 自仓库：[cnfeat/blog.io: 简单直接可用博客模板](https://github.com/cnfeat/blog.io)
+这是一个秒杀项目的原型。
 
-配套说用说明：[如何搭建一个独立博客——简明 GitHub Pages与 jekyll 教程 - 读立写生](http://www.cnfeat.com/blog/2014/05/10/how-to-build-a-blog/)
+## 使用工具：
+eclipse+MySql
 
-## 博客模板修订清单
+## 使用技术：
+Redis，CDN缓存，Restful规范
 
-文档内有详细注释，可按注释逐个修订
+## 使用框架：
+Mybatis，Spring，SpringMVC
 
-* 博客名字、作者信息、浏览器小图标等：_config.yml 
-* 个人介绍页面：about.md
-* 代表作页面：milestone.md
-* 文章模板：blog.io/_posts/2015-03-02-how-to-write.md 
-* 
+## 项目描述：
 
-## 模板作者
+1.生成秒杀列表页：包含秒杀产品ID，产品名称，秒杀的开始时间，结束时间，创建时间，秒杀链接地址（链接到秒杀详情页）
+2.秒杀详情页：秒杀产品名称，秒杀开始倒计时，秒杀按钮，秒杀信息提示
+3.优化逻辑和流程，使其符合秒杀的高并发要求
 
-陈素封，博客：独立写生：[cnfeat.com](cnfeat.com)
-
-联系方式：cnfeat@gmail.com
 
 
