@@ -44,7 +44,9 @@ description: String是字符串常量，StringBuilder在单线程中操作比较
 ## 线程安全问题
 
    StringBuilder：线程非安全的</br>
+
 StringBuffer：线程安全的</br>
+
    当我们在字符串缓冲去被多个线程使用是，JVM不能保证StringBuilder的操作是安全的，虽然他的速度最快，但是可以保证StringBuffer是可以正确操作的。当然大多数情况下就是我们是在单线程下进行的操作，所以大多数情况下是建议用StringBuilder而不用StringBuffer的，就是速度的原因。
 
 # 5.对于三者使用的总结
