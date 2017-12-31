@@ -48,17 +48,12 @@ description: Asynchronous JavaScript and XML。
 3. 请求头
 4. 请求体
 
-客户端将要发送的信息放在open方法内：
-send方法：
-
 ## 2） HTTP响应
    HTTP响应由3部分组成：
 
 1. 数字和文字组成的状态码 HTTP/1.1 200 OK
 2. 响应头
 3. 响应体
-
-responseText
 
 ## 3)客户端代码实现
     document.getElementById("search").onclick=function(){
@@ -109,15 +104,15 @@ responseText
 	});
 
 ## 5）跨域调用
-### ① 只能处理GET请求
+### ① JSONP：只能处理GET请求
 
     $("#search").click(function(){
 		$.ajax({
 			type:"GET",
-			**//将localhost改成127.0.0.1就不是同一个域了**
+			//将localhost改成127.0.0.1就不是同一个域了
 			url:"http://127.0.0.1:8080/ajaxdemo/service.php?number="+$("#keyword").val(),
-			dataType:"jsonp",**//dataType设置成jsonp**
-			jsonp:"callback",**//添加jsonp参数，**
+			dataType:"jsonp",//dataType设置成jsonp
+			jsonp:"callback",//添加jsonp参数，
 			success: function(data){
 				if(data.success){
 					$("#searchResult").html(data.msg);
@@ -131,10 +126,12 @@ responseText
 		});
 	});
 
-### ②服务端做相关修改，如php服务端
+### ②服务端做相关修改
+如php服务端
 
     function search(){
-	    $jsonp=$_GET["callback"];
+	    //加上下面这句
+		$jsonp=$_GET["callback"];
         //其他处理逻辑
     }
 
