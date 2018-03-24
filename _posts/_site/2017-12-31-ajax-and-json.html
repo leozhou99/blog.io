@@ -1,0 +1,155 @@
+<h1 id="1-什么是ajax">1. 什么是ajax？</h1>
+
+<p>Asynchronous JavaScript and XML（异步的JS和XML）</p>
+
+<h1 id="2-实现ajax的对象xmlhttprequest">2. 实现ajax的对象——XMLHttpRequest</h1>
+
+<h2 id="一般使用流程">一般使用流程</h2>
+<ol>
+  <li>运用HTML和CSS来实现页面</li>
+  <li>运用XMLHttpRequest和web服务器进行数据的异步交换</li>
+  <li>运用JS操作DOM，实现动态局部刷新</li>
+</ol>
+
+<h2 id="使用xmlhttprequest的方法">使用XMLHttpRequest的方法</h2>
+
+<p>可以写个函数来调用XMLHttpRequest：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function getXhr(){
+	var xhr=null;
+	if(window.XMLHttpRequest){
+		//非ie浏览器
+		xhr=new XMLHttpRequest();
+	}else{
+		xhr=new ActiveXObject('Microsoft.XMLHttp');
+	}
+	return xhr;
+}
+</code></pre></div></div>
+
+<h1 id="3-如何实现异步交换">3. 如何实现异步交换</h1>
+<p>实现异步交换，首先客户端要发送HTTP请求；</p>
+
+<p>服务器在收到请求后进行处理；</p>
+
+<p>服务器将处理结果返回给客户端。</p>
+
+<h2 id="1-http请求">1） HTTP请求</h2>
+<p>HTTP请求由4部分组成：</p>
+
+<ol>
+  <li>请求方法：GET、POST：GET一般用来获取信息，一般在2000字符；POST一般用来发送数据，数量无限制</li>
+  <li>请求路径：url</li>
+  <li>请求头</li>
+  <li>请求体</li>
+</ol>
+
+<h2 id="2-http响应">2） HTTP响应</h2>
+<p>HTTP响应由3部分组成：</p>
+
+<ol>
+  <li>数字和文字组成的状态码 HTTP/1.1 200 OK</li>
+  <li>响应头</li>
+  <li>响应体</li>
+</ol>
+
+<h2 id="3客户端代码实现">3)客户端代码实现</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>document.getElementById("search").onclick=function(){
+  //发送Ajax查询请求并处理
+  var request=new XMLHttpRequest();
+  //调用open方法拼成传递的数据
+  request.open("GET","service.php?number="+document.getElementById("keyword").value);
+  //发送数据
+  request.send();
+  //监听readystate的变化（0→1→2→3→4）
+  request.onreadystatechange=function(){
+  	  if(request.readyState==4){
+          //200表示请求成功
+		  if(request.status==200){
+			  //将responseText转成JSON对象
+			  //parse方法比eval方法好，在于eval可能会执行JSON中嵌入的恶意代码
+			  var data =JSON.parse(request.responseText);
+			  if(data.success){
+				  document.getElementById("searchResult").innerHTML=data.msg;
+			  }else{
+				  document.getElementById("searchResult").innerHTML="出现错误:"+data.msg;
+			  }
+		  }else{
+			  alert("发生错误："+request.status);
+		  }
+	  }
+  }
+}
+</code></pre></div></div>
+
+<h2 id="4-利用jquery来实现ajax">4） 利用jQuery来实现ajax</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$("#search").click(function(){
+	$.ajax({
+		type:"GET",
+		url:"http://localhost:8080/ajaxdemo/service.php?number="+$("#keyword").val(),
+		dataType:"json",
+		success: function(data){
+			if(data.success){
+				$("#searchResult").html(data.msg);
+			}else{
+				$("#searchResult").html("出现错误:"+data.msg);
+			}
+		},
+		//jquery中的jqXHR就是responseText
+		error: function(jqXHR){
+			alert("发生错误："+jqXHR.status);
+		}
+	});
+});
+</code></pre></div></div>
+
+<h2 id="5跨域调用">5）跨域调用</h2>
+<h3 id="-jsonp只能处理get请求">① JSONP：只能处理GET请求</h3>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$("#search").click(function(){
+	$.ajax({
+		type:"GET",
+		//将localhost改成127.0.0.1就不是同一个域了
+		url:"http://127.0.0.1:8080/ajaxdemo/service.php?number="+$("#keyword").val(),
+		dataType:"jsonp",//dataType设置成jsonp
+		jsonp:"callback",//添加jsonp参数，
+		success: function(data){
+			if(data.success){
+				$("#searchResult").html(data.msg);
+			}else{
+				$("#searchResult").html("出现错误:"+data.msg);
+			}
+		},
+		error: function(jqXHR){
+			alert("发生错误："+jqXHR.status);
+		}
+	});
+});
+</code></pre></div></div>
+
+<h3 id="服务端做相关修改">②服务端做相关修改</h3>
+<p>如php服务端</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function search(){
+    //加上下面这句
+	$jsonp=$_GET["callback"];
+    //其他处理逻辑
+}
+</code></pre></div></div>
+
+<p>将返回值进行修改</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>原来是
+$result = '{"success": false,"msg": "没有找到员工"}';
+拼上括号，改造成
+$result = $jsonp.'({"success": false,"msg": "没有找到员工"})';
+</code></pre></div></div>
+
+<h3 id="处理跨域调用的其他方法">③处理跨域调用的其他方法</h3>
+
+<p>由HTML5提供的XHR2，IE10以下不支持。无需改动客户端，只需要对服务的进行修改。
+在php服务端加上如下代码：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>header("Access-Control-Allow-Origin:*"); 
+header("Access-Control-Allow-Method:POST,GET"); 
+</code></pre></div></div>
